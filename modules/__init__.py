@@ -1,0 +1,1 @@
+"""modules package — AI Smart Attendance System sub-modules."""

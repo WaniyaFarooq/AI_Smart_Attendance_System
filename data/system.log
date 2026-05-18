@@ -1589,3 +1589,63 @@
 2026-05-18 01:08:26 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
 2026-05-18 01:08:26 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
 2026-05-18 01:08:26 — INFO     — All project directories are ready.
+2026-05-18 09:59:48 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 09:59:48 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 09:59:48 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 09:59:48 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 09:59:48 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 09:59:48 — INFO     — All project directories are ready.
+2026-05-18 09:59:48 — INFO     — FaceDetector initialised with Haar Cascade.
+2026-05-18 09:59:48 — INFO     — StudentManager initialised.
+2026-05-18 09:59:48 — INFO     — FaceDetector initialised with Haar Cascade.
+2026-05-18 09:59:49 — INFO     — Loaded trained model — 1 student(s) in memory.
+2026-05-18 09:59:49 — INFO     — AttendanceManager initialised.
+2026-05-18 09:59:59 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 09:59:59 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 09:59:59 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 09:59:59 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 09:59:59 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 09:59:59 — INFO     — All project directories are ready.
+2026-05-18 10:00:11 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:00:11 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:00:11 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:00:11 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:00:11 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:00:11 — INFO     — All project directories are ready.
+2026-05-18 10:00:24 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:00:24 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:00:24 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:00:24 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:00:24 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:00:24 — INFO     — All project directories are ready.
+2026-05-18 10:00:33 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:00:33 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:00:33 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:00:33 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:00:33 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:00:33 — INFO     — All project directories are ready.
+2026-05-18 10:00:40 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:00:40 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:00:40 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:00:40 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:00:40 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:00:40 — INFO     — All project directories are ready.
+2026-05-18 10:00:46 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:00:46 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:00:46 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:00:46 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:00:46 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:00:46 — INFO     — All project directories are ready.
+2026-05-18 10:01:19 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 10:01:19 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 10:01:19 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 10:01:19 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 10:01:19 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 10:01:19 — INFO     — All project directories are ready.
+2026-05-18 10:01:20 — INFO     — Loaded trained model — 1 student(s) in memory.
+2026-05-18 19:20:17 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data
+2026-05-18 19:20:17 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\faces
+2026-05-18 19:20:17 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\attendance
+2026-05-18 19:20:17 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\model
+2026-05-18 19:20:17 — DEBUG    — Directory ready: C:\Users\waniy\AI_Smart_Attendance_System\data\backups
+2026-05-18 19:20:17 — INFO     — All project directories are ready.

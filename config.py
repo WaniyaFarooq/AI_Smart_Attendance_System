@@ -10,7 +10,7 @@
 """
 
 import os  # Built-in module for file/folder path operations
-
+import re
 # ─────────────────────────────────────────────
 #  PROJECT METADATA
 # ─────────────────────────────────────────────
@@ -55,7 +55,7 @@ FACE_DETECTION_CONFIG = {
 # ─────────────────────────────────────────────
 FACE_SAMPLE_COUNT   = 50    # Number of face photos captured per student
 FACE_IMG_SIZE       = (200, 200)   # All faces resized to this before training
-RECOGNITION_THRESHOLD = 80  # Confidence threshold (lower = more strict)
+RECOGNITION_THRESHOLD = 70  # Confidence threshold (lower = more strict)
                              # LBPH: 0 = perfect match, higher = worse match
                              # We REJECT if confidence > this threshold
 

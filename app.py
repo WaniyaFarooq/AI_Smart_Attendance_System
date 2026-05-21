@@ -4,47 +4,21 @@
 ║          Built with Streamlit + OpenCV + LBPH AI             ║
 ╚══════════════════════════════════════════════════════════════╝
 
-Entry point for the Streamlit dashboard.
-Run with: 
-
-
-Pages (Sidebar Navigation):
-  🏠  Home / Dashboard
-  📝  Student Registration
-  🧠  Train AI Model
-  📸  Mark Attendance
-  📋  Attendance Records
-  📊  Analytics & Charts
-  ⚙️  Settings & Tools
-
-Demonstrates ALL required course topics:
-  Variables, Expressions, Operators, Loops, Control Structures,
-  Functions, File Handling, Exception Handling, Regex, Strings,
-  Lists, Tuples, Dictionaries, OOP, NumPy, Pandas, Matplotlib,
-  OpenCV Object Detection, AI/Deep Learning Concepts, Git
+FIXED: Removed st.rerun() after marking attendance to prevent
+the same image from being reprocessed and marked multiple times.
 """
 
-# ──────────────────────────────────────────────────────────────
-#  STANDARD LIBRARY IMPORTS
-# ──────────────────────────────────────────────────────────────
 import os
 import sys
 import io
 import time
 import datetime
 
-# ──────────────────────────────────────────────────────────────
-#  THIRD-PARTY IMPORTS
-# ──────────────────────────────────────────────────────────────
 import cv2
 import numpy  as np
 import pandas as pd
 import streamlit as st
 
-# ──────────────────────────────────────────────────────────────
-#  PROJECT IMPORTS
-# ──────────────────────────────────────────────────────────────
-# Make sure the project root is on sys.path so sub-modules resolve
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import config as cfg
@@ -58,16 +32,8 @@ from modules.attendance_manager import AttendanceManager
 from modules.data_visualizer import DataVisualizer
 
 
-# ══════════════════════════════════════════════════════════════
-#  ONE-TIME SETUP
-# ══════════════════════════════════════════════════════════════
-# Create data directories before anything else runs
 create_project_directories()
 
-
-# ══════════════════════════════════════════════════════════════
-#  STREAMLIT PAGE CONFIG  (must be the FIRST st.* call)
-# ══════════════════════════════════════════════════════════════
 st.set_page_config(
     page_title = cfg.PAGE_TITLE,
     page_icon  = cfg.PAGE_ICON,
@@ -75,13 +41,8 @@ st.set_page_config(
     initial_sidebar_state = "expanded",
 )
 
-
-# ══════════════════════════════════════════════════════════════
-#  GLOBAL CSS  (injected into the Streamlit app)
-# ══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-/* ── Metric cards ─────────────────────────────── */
 div[data-testid="metric-container"] {
     background   : #1A1A2E;
     border       : 1px solid #2C2C2C;
@@ -99,7 +60,6 @@ div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
     font-weight: bold;
 }
 
-/* ── Section headers ──────────────────────────── */
 .section-header {
     background   : linear-gradient(135deg, #1A1A2E, #16213E);
     border-left  : 4px solid #4CAF50;
@@ -111,7 +71,6 @@ div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
     font-weight  : 600;
 }
 
-/* ── Info / success / warning banners ────────── */
 .info-box {
     background   : rgba(33,150,243,0.12);
     border       : 1px solid #2196F3;
@@ -134,7 +93,6 @@ div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
     color        : #FFCC80;
 }
 
-/* ── DataFrame table styling ─────────────────── */
 div[data-testid="stDataFrame"] {
     border-radius: 10px;
     overflow     : hidden;
@@ -143,11 +101,6 @@ div[data-testid="stDataFrame"] {
 """, unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════════════
-#  CACHED RESOURCE INITIALISATION
-#  @st.cache_resource ensures these objects are created once
-#  and reused across all user interactions.
-# ══════════════════════════════════════════════════════════════
 @st.cache_resource
 def get_student_manager() -> StudentManager:
     return StudentManager()
@@ -165,12 +118,8 @@ def get_face_recognizer() -> FaceRecognizer:
     return FaceRecognizer()
 
 
-# ══════════════════════════════════════════════════════════════
-#  HELPER FUNCTIONS
-# ══════════════════════════════════════════════════════════════
-
 def section_header(icon: str, title: str) -> None:
-    """Render a styled section header inside a page."""
+    """Render a styled section header."""
     st.markdown(
         f'<div class="section-header">{icon} &nbsp; {title}</div>',
         unsafe_allow_html=True,
@@ -191,25 +140,15 @@ def warning_box(text: str) -> None:
 
 
 def numpy_from_uploaded(file_bytes) -> np.ndarray:
-    """
-    Convert bytes from st.camera_input / st.file_uploader to
-    an OpenCV-compatible BGR NumPy array.
-    """
+    """Convert bytes from st.camera_input to OpenCV BGR array."""
     file_bytes = np.asarray(bytearray(file_bytes.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     return img
 
 
-# ══════════════════════════════════════════════════════════════
-#  SIDEBAR NAVIGATION
-# ══════════════════════════════════════════════════════════════
 def render_sidebar() -> str:
-    """
-    Build the sidebar with navigation and quick stats.
-    Returns the name of the currently selected page.
-    """
+    """Build the sidebar with navigation and quick stats."""
     with st.sidebar:
-        # ── Logo / title ──────────────────────────────────
         st.markdown("""
         <div style='text-align:center; padding: 10px 0 20px'>
             <div style='font-size:48px'>🎓</div>
@@ -224,7 +163,6 @@ def render_sidebar() -> str:
 
         st.divider()
 
-        # ── Navigation radio buttons ───────────────────────
         pages = {
             "🏠  Home / Dashboard"    : "Home",
             "📝  Student Registration" : "Register",
@@ -241,11 +179,9 @@ def render_sidebar() -> str:
 
         st.divider()
 
-        # ── Quick stats panel ──────────────────────────────
         st.markdown("**📌 Quick Stats**")
 
         try:
-            sm      = get_student_manager()
             am      = get_attendance_manager()
             today   = am.get_today_statistics()
 
@@ -254,7 +190,6 @@ def render_sidebar() -> str:
             st.metric("❌ Absent Today",          today["absent"])
             st.metric("📅 Date",                 today["date"])
 
-            # Colour-coded attendance rate
             pct = today["percentage"]
             color = "#4CAF50" if pct >= 75 else "#FF9800" if pct >= 50 else "#F44336"
             st.markdown(
@@ -267,22 +202,16 @@ def render_sidebar() -> str:
 
         st.divider()
 
-        # ── Model status indicator ─────────────────────────
         if model_exists():
             st.markdown("🟢 **AI Model:** Trained")
         else:
             st.markdown("🔴 **AI Model:** Not Trained")
-            st.caption("Go to 'Train AI Model' after registering students.")
 
     return page
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 1 — HOME / DASHBOARD
-# ══════════════════════════════════════════════════════════════
 def page_home() -> None:
-    """Landing page with overview metrics and recent activity."""
-    # ── Title banner ──────────────────────────────────────
+    """Landing page with overview metrics."""
     st.markdown("""
     <div style='background: linear-gradient(135deg, #0F3460, #16213E);
                 border-radius: 16px; padding: 28px 36px; margin-bottom: 24px;
@@ -297,7 +226,6 @@ def page_home() -> None:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── KPI Metrics Row ───────────────────────────────────
     sm    = get_student_manager()
     am    = get_attendance_manager()
     today = am.get_today_statistics()
@@ -319,7 +247,6 @@ def page_home() -> None:
 
     st.divider()
 
-    # ── Two column layout: charts + table ─────────────────
     col_left, col_right = st.columns([1.5, 1])
 
     with col_left:
@@ -335,7 +262,6 @@ def page_home() -> None:
 
     st.divider()
 
-    # ── Recent attendance table ───────────────────────────
     section_header("🕐", "Recent Attendance (Today)")
     today_df = am.get_today_attendance()
 
@@ -348,7 +274,6 @@ def page_home() -> None:
             hide_index=True,
         )
 
-    # ── How to use guide ──────────────────────────────────
     st.divider()
     section_header("📖", "How to Use This System")
     steps = [
@@ -371,18 +296,13 @@ def page_home() -> None:
             st.write(desc)
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 2 — STUDENT REGISTRATION
-# ══════════════════════════════════════════════════════════════
 def page_register() -> None:
     """Register new students and capture face training images."""
     st.title("📝 Student Registration")
     sm = get_student_manager()
 
-    # ── Tabs: Register | View Students ────────────────────
     tab_register, tab_view = st.tabs(["➕ Register New Student", "👥 View All Students"])
 
-    # ────────────────────────────────────────────────────────
     with tab_register:
         section_header("📋", "Student Details")
         info_box(
@@ -390,7 +310,6 @@ def page_register() -> None:
             "face samples using your webcam."
         )
 
-        # ── Registration form ──────────────────────────────
         with st.form("registration_form", clear_on_submit=False):
             col1, col2 = st.columns(2)
 
@@ -429,21 +348,17 @@ def page_register() -> None:
                 )
                 if ok:
                     st.success(msg)
-                    # Store the new student ID in session state for face capture
                     st.session_state["pending_face_student"] = student.student_id
                 else:
                     st.error(msg)
 
-        # ── Face capture section ───────────────────────────
         st.divider()
         section_header("📷", "Capture Face Training Samples")
 
-        # Which student are we capturing for?
         all_students = sm.get_all_students()
         if all_students.empty:
             warning_box("No students registered yet. Register a student first.")
         else:
-            # Pre-select the student just registered (if any)
             default_sid = st.session_state.get("pending_face_student", "")
             student_ids = all_students["Student_ID"].tolist()
 
@@ -457,7 +372,6 @@ def page_register() -> None:
                 index=default_idx,
             )
 
-            # Show current sample count
             from utils.helpers import student_face_dir, count_files_in_dir
             face_dir      = student_face_dir(target_id)
             current_count = count_files_in_dir(face_dir, ".jpg")
@@ -466,7 +380,6 @@ def page_register() -> None:
             col_info.metric("Current Face Samples", current_count)
             col_target.metric("Target Samples",     cfg.FACE_SAMPLE_COUNT)
 
-            # Progress bar
             prog = min(current_count / cfg.FACE_SAMPLE_COUNT, 1.0)
             st.progress(prog, text=f"{current_count}/{cfg.FACE_SAMPLE_COUNT} samples")
 
@@ -475,25 +388,21 @@ def page_register() -> None:
                 "face sample. Take photos from different angles for best results."
             )
 
-            # Camera input — user clicks to take a photo
             camera_img = st.camera_input(
                 "Take a photo (face the camera clearly)",
                 key=f"cam_{target_id}",
             )
 
             if camera_img is not None:
-                # Convert the uploaded photo bytes to a NumPy image array
                 img_array = numpy_from_uploaded(camera_img)
 
                 if img_array is not None:
-                    # Get the next sample index
                     next_idx  = count_files_in_dir(face_dir, ".jpg")
                     ok, msg   = sm.capture_face_samples_from_image(
                         target_id, img_array, next_idx
                     )
                     if ok:
                         st.success(msg)
-                        # Refresh count display
                         new_count = count_files_in_dir(face_dir, ".jpg")
                         if new_count >= cfg.FACE_SAMPLE_COUNT:
                             success_box(
@@ -505,7 +414,6 @@ def page_register() -> None:
                 else:
                     st.error("Could not read the captured image.")
 
-            # Tip for variety
             with st.expander("💡 Tips for best face recognition accuracy"):
                 st.markdown("""
                 - Take photos in **different lighting conditions**
@@ -515,18 +423,15 @@ def page_register() -> None:
                 - Aim to collect at least **50 samples** per student
                 """)
 
-    # ────────────────────────────────────────────────────────
     with tab_view:
         section_header("👥", "Registered Students")
 
-        # Search box
         search_q = st.text_input("🔍 Search by ID or Name", placeholder="Type to search…")
         df       = sm.search_students(search_q) if search_q else sm.get_all_students()
 
         if df.empty:
             info_box("No students registered yet.")
         else:
-            # Add face status column
             from utils.helpers import student_face_dir, count_files_in_dir
             def face_status(sid):
                 n = count_files_in_dir(student_face_dir(str(sid)), ".jpg")
@@ -537,7 +442,6 @@ def page_register() -> None:
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.caption(f"Showing {len(df)} student(s).")
 
-        # ── Delete student ─────────────────────────────────
         st.divider()
         section_header("🗑️", "Delete Student")
 
@@ -559,11 +463,8 @@ def page_register() -> None:
                         st.error(msg)
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 3 — TRAIN AI MODEL
-# ══════════════════════════════════════════════════════════════
 def page_train() -> None:
-    """Train the LBPH face recogniser on collected face samples."""
+    """Train the LBPH face recogniser."""
     st.title("🧠 Train AI Model")
 
     sm = get_student_manager()
@@ -580,25 +481,19 @@ def page_train() -> None:
         1. **Divide** the face image into small rectangular cells (e.g. 8×8 grid).
         2. **LBP Encoding:** For each pixel in a cell, compare it to its 8 surrounding
            neighbours. Write **1** if the neighbour is brighter, **0** if darker.
-           This gives an 8-bit binary number (0–255) per pixel.
-        3. **Histogram:** For each cell, count how many pixels fall into each of the
-           256 LBP codes. This produces a 256-bin histogram per cell.
-        4. **Concatenate** all cell histograms → one long feature vector per face.
-        5. **Recognition:** When a new face arrives, compute its feature vector and
-           compare it to all training vectors using **Chi-square distance**.
-           The closest stored face is the predicted identity.
+        3. **Histogram:** For each cell, build a 256-bin histogram of LBP codes.
+        4. **Concatenate** all histograms → one long feature vector per face.
+        5. **Recognition:** Compare new face to all training vectors using Chi-square distance.
 
-        #### Why LBPH is great for this project:
-        - ✅ Works well under varying lighting conditions
-        - ✅ Runs fast on any laptop (no GPU needed)
-        - ✅ Built into OpenCV — no complex installation
-        - ✅ Incremental — can update without full retraining
-        - ✅ Excellent for a beginner AI project demonstration
+        #### Key Points:
+        - **Lower confidence = better match** (0 = perfect, >80 = no match)
+        - Works well under varying lighting (because LBP is local patterns, not raw pixels)
+        - Fast and lightweight
+        - ✅ Great for this project!
         """)
 
     st.divider()
 
-    # ── Pre-training checks ───────────────────────────────
     section_header("🔍", "Pre-Training Check")
 
     summary = sm.get_registration_summary()
@@ -617,7 +512,6 @@ def page_train() -> None:
             f"Currently only {summary['with_face_data']} student(s) have face samples."
         )
 
-    # ── Model status ──────────────────────────────────────
     st.divider()
     section_header("📦", "Current Model Status")
 
@@ -630,26 +524,22 @@ def page_train() -> None:
     else:
         warning_box("No trained model found. Click Train below to create one.")
 
-    # ── Training button ───────────────────────────────────
     st.divider()
     section_header("🚀", "Start Training")
 
     st.markdown("""
     Click **Train AI Model** to:
-    1. Load all face images from disk
-    2. Preprocess them (grayscale, resize, equalise)
-    3. Run the LBPH training algorithm
-    4. Save the model weights to `data/model/trainer.yml`
+    1. Load all face images from disk (already preprocessed)
+    2. Run the LBPH training algorithm
+    3. Save the model weights to `data/model/trainer.yml`
     """)
 
     if st.button("🧠 Train AI Model", type="primary", use_container_width=True):
         with st.spinner("Training model — please wait…"):
             try:
-                # FaceRecognizer.train() is the core AI training step
                 ok, msg = fr.train(cfg.FACES_DIR)
                 if ok:
                     st.success(f"✅ {msg}")
-                    # Clear the cached recognizer so it reloads
                     get_attendance_manager.clear()
                     get_face_recognizer.clear()
                     st.balloons()
@@ -660,15 +550,11 @@ def page_train() -> None:
                 logger.error(f"Training exception: {e}")
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 4 — MARK ATTENDANCE
-# ══════════════════════════════════════════════════════════════
 def page_attendance() -> None:
     """Mark attendance using the webcam and face recognition."""
     st.title("📸 Mark Attendance")
     am = get_attendance_manager()
 
-    # ── Check model readiness ─────────────────────────────
     if not am.recognizer.is_trained:
         st.error(
             "❌ AI model is not trained yet. "
@@ -682,14 +568,11 @@ def page_attendance() -> None:
         "match them against registered students, and mark attendance automatically."
     )
 
-    # ── Mode selector ─────────────────────────────────────
     tab_auto, tab_manual = st.tabs(["📷 Auto (Camera)", "✏️ Manual Entry"])
 
-    # ────────────────────────────────────────────────────────
     with tab_auto:
         st.markdown("### 📷 Capture Photo for Attendance")
 
-        # Show today's stats
         today_stats = am.get_today_statistics()
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total Students",  today_stats["total_students"])
@@ -699,12 +582,13 @@ def page_attendance() -> None:
 
         st.divider()
 
-        # Camera input
         captured = st.camera_input(
             "Click the camera to capture a snapshot for face recognition",
             key="attendance_cam",
         )
 
+        # FIXED: Instead of calling st.rerun(), use session_state to track
+        # whether we should show results
         if captured is not None:
             img = numpy_from_uploaded(captured)
 
@@ -717,7 +601,6 @@ def page_attendance() -> None:
                 col_frame, col_result = st.columns([1.2, 1])
 
                 with col_frame:
-                    # Display annotated frame (convert BGR→RGB for Streamlit)
                     annotated = result["annotated_frame"]
                     if annotated is not None:
                         rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
@@ -751,14 +634,13 @@ def page_attendance() -> None:
                                     "Not marked."
                                 )
 
-                # Refresh stats display
+                # FIXED: Show success message WITHOUT calling st.rerun()
+                # This prevents the same image from being processed multiple times
                 if marked_now:
                     success_box(
                         f"Successfully marked: **{', '.join(marked_now)}**"
                     )
-                    st.rerun()
 
-        # ── Today's attendance table ───────────────────────
         st.divider()
         section_header("📋", "Today's Attendance So Far")
         today_df = am.get_today_attendance()
@@ -771,7 +653,6 @@ def page_attendance() -> None:
                 hide_index=True,
             )
 
-    # ────────────────────────────────────────────────────────
     with tab_manual:
         section_header("✏️", "Manual Attendance Entry")
         warning_box(
@@ -811,9 +692,6 @@ def page_attendance() -> None:
                         st.error(msg)
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 5 — ATTENDANCE RECORDS
-# ══════════════════════════════════════════════════════════════
 def page_records() -> None:
     """View, filter, search, and export attendance records."""
     st.title("📋 Attendance Records")
@@ -825,7 +703,6 @@ def page_records() -> None:
         info_box("No attendance records found yet.")
         return
 
-    # ── Filters sidebar-like layout ───────────────────────
     section_header("🔍", "Filter Records")
     col1, col2, col3, col4 = st.columns(4)
 
@@ -844,7 +721,6 @@ def page_records() -> None:
     with col4:
         search_name = st.text_input("Search Name", placeholder="Type name…")
 
-    # ── Apply filters (using Pandas boolean indexing) ─────
     filtered = all_df.copy()
 
     if date_filter != "All":
@@ -864,17 +740,14 @@ def page_records() -> None:
 
     st.caption(f"Showing **{len(filtered)}** record(s) out of {len(all_df)} total.")
 
-    # ── Data table ────────────────────────────────────────
     st.dataframe(filtered.sort_values(["Date", "Time"], ascending=[False, False]),
                  use_container_width=True, hide_index=True)
 
-    # ── Export ────────────────────────────────────────────
     st.divider()
     section_header("💾", "Export Records")
 
     col_exp1, col_exp2 = st.columns(2)
     with col_exp1:
-        # Convert to CSV bytes and offer download button
         csv_bytes = filtered.to_csv(index=False).encode("utf-8")
         st.download_button(
             label    = "⬇️ Download Filtered Records (CSV)",
@@ -893,7 +766,6 @@ def page_records() -> None:
             use_container_width=True,
         )
 
-    # ── Per-student attendance summary ────────────────────
     st.divider()
     section_header("📊", "Attendance Summary (Per Student)")
 
@@ -901,26 +773,9 @@ def page_records() -> None:
     if not summary_df.empty:
         st.dataframe(summary_df, use_container_width=True, hide_index=True)
 
-        # Colour highlight the Status column
-        def highlight_status(val):
-            if "Good" in str(val):
-                return "color: #4CAF50"
-            elif "Risk" in str(val):
-                return "color: #FF9800"
-            else:
-                return "color: #F44336"
 
-        styled = summary_df.style.applymap(
-            highlight_status, subset=["Status"]
-        )
-        st.dataframe(styled, use_container_width=True, hide_index=True)
-
-
-# ══════════════════════════════════════════════════════════════
-#  PAGE 6 — ANALYTICS & CHARTS
-# ══════════════════════════════════════════════════════════════
 def page_analytics() -> None:
-    """Data visualisation dashboard with multiple chart types."""
+    """Data visualisation dashboard."""
     st.title("📊 Analytics & Charts")
     am = get_attendance_manager()
     sm = get_student_manager()
@@ -930,7 +785,6 @@ def page_analytics() -> None:
     daily_df   = am.get_daily_summary()
     students_df = sm.get_all_students()
 
-    # ── Row 1: Daily + Pie ────────────────────────────────
     section_header("📅", "Daily Attendance Overview")
     col1, col2 = st.columns([2, 1])
 
@@ -945,21 +799,18 @@ def page_analytics() -> None:
 
     st.divider()
 
-    # ── Row 2: Percentage per student ────────────────────
     section_header("🏅", "Student Attendance Percentages")
     fig3 = DataVisualizer.plot_student_percentages(summary_df)
     st.pyplot(fig3)
 
     st.divider()
 
-    # ── Row 3: Monthly trend ──────────────────────────────
     section_header("📈", "Monthly Attendance Trend")
     fig4 = DataVisualizer.plot_monthly_trend(all_df)
     st.pyplot(fig4)
 
     st.divider()
 
-    # ── Row 4: Department pie + Top attendees ─────────────
     col_dept, col_top = st.columns(2)
 
     with col_dept:
@@ -974,7 +825,6 @@ def page_analytics() -> None:
 
     st.divider()
 
-    # ── Row 5: Heatmap ────────────────────────────────────
     section_header("🗓️", "Attendance Heatmap")
     info_box(
         "Each row is a student, each column is a date. "
@@ -983,7 +833,6 @@ def page_analytics() -> None:
     fig7 = DataVisualizer.plot_attendance_heatmap(all_df)
     st.pyplot(fig7)
 
-    # ── Row 6: Key insights ───────────────────────────────
     st.divider()
     section_header("💡", "Key Insights")
 
@@ -1006,17 +855,13 @@ def page_analytics() -> None:
         info_box("Record some attendance first to see insights.")
 
 
-# ══════════════════════════════════════════════════════════════
-#  PAGE 7 — SETTINGS & TOOLS
-# ══════════════════════════════════════════════════════════════
 def page_settings() -> None:
     """System settings, backup tools, and developer info."""
     st.title("⚙️ Settings & Tools")
 
-    # ── System info ───────────────────────────────────────
-    section_header("🖥️", "System Information")
-
     fh = FileHandler()
+
+    section_header("🖥️", "System Information")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -1043,7 +888,6 @@ def page_settings() -> None:
         | Model Exists | {'Yes ✅' if model_exists() else 'No ❌'} |
         """)
 
-    # ── File paths ────────────────────────────────────────
     st.divider()
     section_header("📁", "Data Paths")
 
@@ -1061,7 +905,6 @@ Log File     : {cfg.LOG_FILE}
     att_files = list_attendance_files()
     st.caption(f"Attendance files on disk: {len(att_files)}")
 
-    # ── Backup tools ──────────────────────────────────────
     st.divider()
     section_header("💾", "Backup Data")
 
@@ -1079,7 +922,6 @@ Log File     : {cfg.LOG_FILE}
             paths = fh.backup_all_attendance()
             st.success(f"Backed up {len(paths)} attendance file(s).")
 
-    # ── Model management ──────────────────────────────────
     st.divider()
     section_header("🧠", "Model Management")
 
@@ -1104,7 +946,6 @@ Log File     : {cfg.LOG_FILE}
     else:
         warning_box("No trained model exists. Go to 🧠 Train AI Model.")
 
-    # ── View log file ─────────────────────────────────────
     st.divider()
     section_header("📜", "System Log (last 50 lines)")
 
@@ -1116,51 +957,27 @@ Log File     : {cfg.LOG_FILE}
     else:
         st.caption("No log file found yet.")
 
-    # ── Git concepts ──────────────────────────────────────
     st.divider()
     section_header("🗂️", "Git Version Control Guide")
     with st.expander("Git commands for this project"):
         st.code("""
-# Initialise a new Git repository
 git init
-
-# Stage all project files for commit
 git add .
-
-# Create the first commit
 git commit -m "Initial commit: AI Attendance System"
-
-# Push to GitHub (replace URL with your repo)
 git remote add origin https://github.com/your_username/AI-Attendance-System.git
 git push -u origin main
-
-# Create a feature branch for new development
 git checkout -b feature/new-ui
-
-# Merge feature branch back to main
 git checkout main
 git merge feature/new-ui
-
-# View commit history
 git log --oneline
-
-# Discard uncommitted changes
 git restore .
 """, language="bash")
 
 
-# ══════════════════════════════════════════════════════════════
-#  MAIN — ROUTER
-# ══════════════════════════════════════════════════════════════
 def main() -> None:
-    """
-    Main entry point.
-    Renders the sidebar and routes to the selected page function.
-    """
+    """Main entry point - route to selected page."""
     page = render_sidebar()
 
-    # Route to the correct page function using a dictionary
-    # (demonstrates using a dictionary instead of a long if-elif chain)
     page_router = {
         "Home"       : page_home,
         "Register"   : page_register,
@@ -1171,13 +988,9 @@ def main() -> None:
         "Settings"   : page_settings,
     }
 
-    # Call the appropriate page function; default to Home if unknown
     page_fn = page_router.get(page, page_home)
     page_fn()
 
 
-# ─────────────────────────────────────────────
-#  ENTRY POINT
-# ─────────────────────────────────────────────
 if __name__ == "__main__":
     main()

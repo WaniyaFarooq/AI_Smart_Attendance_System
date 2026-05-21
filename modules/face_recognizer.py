@@ -230,11 +230,12 @@ class FaceRecognizer:
         try:
             # Ensure correct size
             face_resized = cv2.resize(face_gray, cfg.FACE_IMG_SIZE)
-            face_eq      = cv2.equalizeHist(face_resized)
+            face_input = face_resized
+           # face_eq      = cv2.equalizeHist(face_resized)
 
             # LBPH predict returns (label, confidence)
             # confidence: 0 = perfect match, > threshold = no match
-            label, confidence = self.recognizer.predict(face_eq)
+            label, confidence = self.recognizer.predict(face_input )
 
             # Check if confidence is within acceptable threshold
             recognized = confidence < cfg.RECOGNITION_THRESHOLD
